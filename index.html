@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shalin Vachheta — AI • ML • GenAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* Custom scrollbar for a more modern feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f1f1f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4a4a4a;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5a5a5a;
+        }
+
+        /* Re-usable button style */
+        .chip-button {
+            background-color: #313335;
+            color: #e3e3e3;
+            border: 1px solid #4a4a4a;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .chip-button:hover {
+            background-color: #4a4a4a;
+        }
+        .chip-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Chat bubble styles */
+        .chat-bubble {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .chat-bubble.user {
+            background-color: #313335;
+            color: #e3e3e3;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble.model {
+            background-color: #232527;
+            color: #e3e3e3;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        
+        /* Avatar styles */
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .avatar.user-avatar {
+            background-color: #7c5bff;
+            color: white;
+        }
+        .avatar.model-avatar {
+            /* Simple "Gemini" star */
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+            color: #1e1e1e;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+        
+        /* Styles for content inside chat bubbles */
+        .chat-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #c2d5ff; /* Light blue accent */
+            margin-top: 10px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #4a4a4a;
+            padding-bottom: 4px;
+        }
+        .chat-content h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e3e3e3;
+            margin-top: 16px;
+        }
+        .chat-content em {
+            color: #a0a0a0;
+            font-style: normal;
+        }
+        .chat-content ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .chat-content li {
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+        .chat-content a {
+            color: #8ab4f8; /* Google's link color */
+            text-decoration: none;
+        }
+        .chat-content a:hover {
+            text-decoration: underline;
+        }
+        .tech-tag {
+            display: inline-block;
+            background-color: #313335;
+            color: #c7c7c7;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin: 2px;
+            border: 1px solid #4a4a4a;
+        }
+    </style>
+</head>
+
+<body class="bg-[#131314] text-[#e3e3e3] font-sans">
+
+    <div class="h-screen flex flex-col">
+        
+        <header class="p-4 border-b border-[#4a4a4a] bg-[#1e1e1e]">
+            <h1 class="text-xl font-semibold text-center">Shalin Vachheta — AI • ML • GenAI</h1>
+        </header>
+
+        <main id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-4 flex flex-col">
+            
+            <div class="chat-bubble model">
+                <div class="avatar model-avatar">✨</div>
+                <div class="chat-content">
+                    <p>Hello! [cite_start]I am Shalin's interactive portfolio assistant. [cite: 6]</p>
+                    <p class="mt-2">
+                        I'm here to provide information about his work in AI, ML, and GenAI. What would you like to know? [cite_start]You can select an option below. [cite: 6, 7]
+                    </p>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="p-4 md:p-6 border-t border-[#4a4a4a] bg-[#131314]">
+            <div class="max-w-4xl mx-auto flex flex-wrap justify-center gap-3">
+                <button class="chip-button" onclick="showSection('summary')">Summary</button>
+                <button class="chip-button" onclick="showSection('experience')">Experience</button>
+                <button class="chip-button" onclick="showSection('projects')">Projects</button>
+                <button class="chip-button" onclick="showSection('education')">Education</button>
+                <button class="chip-button" onclick="showSection('skills')">Skills</button>
+                <button class="chip-button" onclick="showSection('certificates')">Certificates</button>
+                <button class="chip-button" onclick="showSection('hobbies')">Hobbies</button>
+                <button class="chip-button" onclick="showSection('contact')">Contact</button>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+
+        // Main function to display content
+        function showSection(sectionName) {
+            let userMessage = '';
+            let modelResponse = '';
+
+            // 1. Define what the user "asked"
+            switch (sectionName) {
+                case 'summary':
+                    userMessage = 'Tell me a summary.';
+                    break;
+                case 'experience':
+                    userMessage = 'What is your experience?';
+                    break;
+                case 'projects':
+                    userMessage = 'Show me your projects.';
+                    break;
+                case 'education':
+                    userMessage = 'What is your education?';
+                    break;
+                case 'skills':
+                    userMessage = 'What are your skills?';
+                    break;
+                case 'certificates':
+                    userMessage = 'Show me your certificates.';
+                    break;
+                case 'hobbies':
+                    userMessage = 'What are your hobbies?';
+                    break;
+                case 'contact':
+                    userMessage = 'How can I contact you?';
+                    break;
+            }
+
+            // 2. Define what the "model" will answer
+            switch (sectionName) {
+                case 'summary':
+                    modelResponse = `
+                        <p>Here is a summary of Shalin's profile:</p>
+                        [cite_start]<p class="mt-2">He has an M.Sc. in Mechatronics from the University of Siegen, specializing in LLMs, RAG, and prompt design. [cite: 6]</p>
+                        <p class="mt-2">Key accomplishments include:</p>
+                        <ul>
+                            [cite_start]<li>Delivered a privacy-first local RAG (50k+ chunks; Streamlit + Qdrant; E5 on CUDA; Ollama/Qwen 2.5) [cite: 7]</li>
+                            [cite_start]<li>Fine-tuned PEGASUS (+20% ROUGE-2) [cite: 7]</li>
+                            [cite_start]<li>Implemented a Transformer (NMT) (+15% BLEU) [cite: 7]</li>
+                        </ul>
+                    `;
+                    break;
+
+                case 'experience':
+                    modelResponse = `
+                        <h3>Experience</h3>
+                        <h4>Student Research Assistant || [cite_start]Sequence-to-Sequence Event Forecasting (BiLSTM) [cite: 10]</h4>
+                        <em>University of Siegen | Siegen, Germany | [cite_start]05/2024 - 05/2025 [cite: 9, 10]</em>
+                        <ul>
+                            [cite_start]<li>Developed a bidirectional LSTM-based Seq2Seq model in PyTorch to forecast multivariate event sequences from CARLA Simulator data, improving accuracy by 25%. [cite: 11]</li>
+                            [cite_start]<li>Tuned hyperparameters using Optuna (Bayesian optimisation), achieving an additional 15% performance gain. [cite: 12]</li>
+                            [cite_start]<li>Designed mask-aware evaluation metrics to handle variable-length sequences robustly. [cite: 13]</li>
+                            [cite_start]<li>Built reproducible ML pipelines with logging, checkpointing, and visualisation support. [cite: 14]</li>
+                        </ul>
+                        <p class="mt-3">
+                            <span class="tech-tag">PyTorch</span>
+                            <span class="tech-tag">LSTM</span>
+                            <span class="tech-tag">Grid Search</span>
+                            <span class="tech-tag">K-fold cross validation</span>
+                            <span class="tech-tag">Pandas</span>
+                            <span class="tech-tag">NumPy</span>
+                            <span class="tech-tag">Matplotlib</span>
+                            <span class="tech-tag">Scikit-learn</span>
+                            <span class="tech-tag">Time Series Forecasting</span>
+                            <span class="tech-tag">Custom Metrics</span>
+                            [cite_start][cite: 15]
+                        </p>
+                    `;
+                    break;
+                
+                case 'projects':
+                    modelResponse = `
+                        <p>Here are some of Shalin's relevant projects:</p>
+
+                        [cite_start]<h4>RAG Chatbot for Multilingual Tender Document Analysis [cite: 48]</h4>
+                        [cite_start]<em>07/2025 - Present [cite: 41]</em>
+                        <ul>
+                            [cite_start]<li>Developed a local Retrieval-Augmented Generation (RAG) chatbot with Streamlit UI for analysing German and English tender documents through semantic search. [cite: 49]</li>
+                            [cite_start]<li>Built a GPU-accelerated embedding pipeline using multilingual-e5-small with Torch CUDA, enabling efficient processing of 50K+ document chunks. [cite: 50]</li>
+                            [cite_start]<li>Integrated Ollama for local Qwen 2.5 model inference, ensuring privacy by keeping all processing offline. [cite: 51]</li>
+                            [cite_start]<li>Designed an intuitive Streamlit interface with real-time chat history, parameter tuning, and file upload support. [cite: 52]</li>
+                        </ul>
+                        <p class="mt-3">
+                            <span class="tech-tag">Streamlit</span>
+                            <span class="tech-tag">Sentence Transformer</span>
+                            <span class="tech-tag">Semantic Similarity</span>
+                            <span class="tech-tag">Qdrant DB</span>
+                            <span class="tech-tag">Ollama</span>
+                            <span class="tech-tag">LangChain</span>
+                            [cite_start][cite: 49]
+                        </p>
+
+                        [cite_start]<h4 class="mt-6">Retention Analytics-ML Powered Churn Insights (Power Co.) [cite: 53]</h4>
+                        [cite_start]<em>04/2025 - 05/2025 [cite: 42]</em>
+                        <ul>
+                            [cite_start]<li>Conducted churn analysis on 10,000+ customer records using Pandas and NumPy. [cite: 55]</li>
+                            [cite_start]<li>Developed and optimised a Random Forest model with 89% prediction accuracy. [cite: 56]</li>
+                            [cite_start]<li>Generated business-driven insights and visualisations using Matplotlib and Seaborn. [cite: 57]</li>
+                            [cite_start]<li>Created an executive-level and actionable churn recommendation. [cite: 58]</li>
+                        </ul>
+                        <p class="mt-3">
+                            <span class="tech-tag">Pandas</span>
+                            <span class="tech-tag">Matplotlib</span>
+                            <span class="tech-tag">seaborn</span>
+                            <span class="tech-tag">scikit</span>
+                            <span class="tech-tag">Random Forest</span>
+                            [cite_start][cite: 54]
+                        </p>
+
+                        [cite_start]<h4 class="mt-6">LLM-Based AI Email Generator (RAG + UI + API) [cite: 59]</h4>
+                        [cite_start]<em>02/2025 - 04/2025 [cite: 43]</em>
+                        <ul>
+                            [cite_start]<li>Developed an LLM-based tool using LangChain and Llama 3.1 for automated generation of outreach emails. [cite: 60]</li>
+                            [cite_start]<li>Integrated Retrieval-Augmented Generation (RAG) with ChromaDB for dynamic, context-aware retrieval. [cite: 61]</li>
+                            [cite_start]<li>Designed flexible prompt templates to control tone, structure, and message composition. [cite: 62]</li>
+                            [cite_start]<li>Delivered a prototype system for real-time semantic matching between job roles and company profiles. [cite: 64]</li>
+                        </ul>
+                        <p class="mt-3">
+                            <span class="tech-tag">LangChain</span>
+                            <span class="tech-tag">LLMs</span>
+                            <span class="tech-tag">Vector Databases</span>
+                            <span class="tech-tag">Streamlit</span>
+                            <span class="tech-tag">Prompt Engineering</span>
+                            [cite_start][cite: 60]
+                        </p>
+
+                        [cite_start]<h4 class="mt-6">Transformer Architecture for Sequence Modeling (NMT) [cite: 65]</h4>
+                        [cite_start]<em>01/2025 - 04/2025 [cite: 44]</em>
+                        <ul>
+                            [cite_start]<li>Designed and implemented a Transformer model in PyTorch, including multi-head attention and positional encoding. [cite: 67]</li>
+                            [cite_start]<li>Built a full tokenisation, padding, and masking pipeline for sequence modelling. [cite: 68]</li>
+                            [cite_start]<li>Improved BLEU score by 15% over baseline models. [cite: 69]</li>
+                            [cite_start]<li>Demonstrated a strong grasp of NLP sequence architecture and optimisation. [cite: 70]</li>
+                        </ul>
+                        <p class="mt-3">
+                            <span class="tech-tag">PyTorch</span>
+                            <span class="tech-tag">Tokenization</span>
+                            <span class="tech-tag">Transformers</span>
+                            <span class="tech-tag">BLEU</span>
+                            <span class="tech-tag">Attention Mechanism</span>
+                            [cite_start][cite: 66]
+                        </p>
+                        
+                        [cite_start]<h4 class="mt-6">Abstractive Summarization using PEGASUS(LLM for Summarization) [cite: 71]</h4>
+                        [cite_start]<em>12/2024 - 04/2025 [cite: 45]</em>
+                        <ul>
+                            [cite_start]<li>Fine-tuned PEGASUS using Hugging Face on the SAMSum dataset for abstractive summarisation. [cite: 73]</li>
+                            [cite_start]<li>Achieved a 20% improvement in ROUGE-2 evaluation score. [cite: 74]</li>
+                            [cite_start]<li>Configured decoding strategies to generate semantically coherent and paraphrased summaries. [cite: 75]</li>
+                            [cite_start]<li>Containerised training using Docker for reproducible and scalable experimentation. [cite: 76]</li>
+                        </ul>
+                        <p class="mt-3">
+                            <span class="tech-tag">Hugging Face</span>
+                            <span class="tech-tag">Transformers</span>
+                            <span class="tech-tag">PEGASUS</span>
+                            <span class="tech-tag">Semantic Similarity</span>
+                            <span class="tech-tag">Docker</span>
+                            [cite_start][cite: 72]
+                        </p>
+
+                        [cite_start]<h4 class="mt-6">Microscopic Denoising & Segmentation [cite: 77]</h4>
+                        [cite_start]<em>04/2024 - 07/2024 [cite: 46]</em>
+                        <ul>
+                            [cite_start]<li>Designed and implemented a dual-branch U-Net architecture (DenoiSeg) to jointly denoise and segment fluorescence microscopy images. [cite: 79]</li>
+                            [cite_start]<li>Achieved a 20% improvement in signal-to-noise ratio (SNR) through effective preprocessing. [cite: 80]</li>
+                            [cite_start]<li>Used hybrid loss functions (MSE + Dice) to improve segmentation accuracy, increasing IoU by 30%. [cite: 82]</li>
+                            [cite_start]<li>Conducted automated benchmarking with classical filters (Gaussian, Median, Wiener), outperforming baselines with 40% better edge detection. [cite: 83]</li>
+                        </ul>
+                        <p class="mt-3">
+                            <span class="tech-tag">U-Net</span>
+                            <span class="tech-tag">OpenCV</span>
+                            <span class="tech-tag">Image Preprocessing</span>
+                            <span class="tech-tag">Dice Loss</span>
+                            [cite_start][cite: 78]
+                        </p>
+                        
+                        [cite_start]<h4 class="mt-6">Predictive Modelling and Real-Time Decision [cite: 84]</h4>
+                        [cite_start]<em>04/2024 - 06/2024 [cite: 47]</em>
+                        <ul>
+                            [cite_start]<li>Processed and engineered features from over 1,000 student records (demographics, grades). [cite: 86]</li>
+                            [cite_start]<li>Trained XGBoost, Ridge Regression, and Random Forest models (R²=0.87). [cite: 87]</li>
+                            [cite_start]<li>Developed a Flask-based web app for real-time academic performance prediction. [cite: 88]</li>
+                            [cite_start]<li>Reduced MSE by 18% through model tuning and validation. [cite: 91]</li>
+                        </ul>
+                        <p class="mt-3">
+                            <span class="tech-tag">XGBoost</span>
+                            <span class="tech-tag">Ridge Regression</span>
+                            <span class="tech-tag">Flask</span>
+                            <span class="tech-tag">Docker</span>
+                            <span class="tech-tag">Pandas</span>
+                            <span class="tech-tag">scikit-learn</span>
+                            [cite_start][cite: 85]
+                        </p>
+
+                        [cite_start]<h4 class="mt-6">US Vehicle Sales Forecasting & Market Insights [cite: 92]</h4>
+                        [cite_start]<em>02/2024 - 04/2024 [cite: 89]</em>
+                        <ul>
+                            [cite_start]<li>Cleaned and processed 500,000+ sales records to uncover seasonal sales fluctuations (e.g. July +30%, Dec -20%). [cite: 94]</li>
+                            [cite_start]<li>Applied customer segmentation and clustering to identify Sedan dominance (45% market share). [cite: 95]</li>
+                            [cite_start]<li>Built visual dashboards with Matplotlib and Seaborn to enable market trend interpretation and forecasting. [cite: 96]</li>
+                            [cite_start]<li>Contributed to a data-driven marketing simulation for future product targeting and strategic planning. [cite: 97]</li>
+                        </ul>
+                        <p class="mt-3">
+                            <span class="tech-tag">Pandas</span>
+                            <span class="tech-tag">NumPy</span>
+                            <span class="tech-tag">Matplotlib</span>
+                            <span class="tech-tag">Seaborn</span>
+                            <span class="tech-tag">Exploratory Data Analysis</span>
+                            [cite_start][cite: 93]
+                        </p>
+                        
+                        [cite_start]<h4 class="mt-6">IPL Match Outcome Analysis [cite: 98]</h4>
+                        [cite_start]<em>06/2021 - 08/2021 [cite: 90]</em>
+                        <ul>
+                            [cite_start]<li>Increased win probability by 15% for toss-winning teams through analysis of 700+ IPL match records. [cite: 100]</li>
+                            [cite_start]<li>Highlighted top-performing teams (60% win rate) and players (55 runs/match average) via feature engineering. [cite: 101]</li>
+                            [cite_start]<li>Streamlined preprocessing workflows, reducing data cleaning time by 35% for faster model iteration. [cite: 102]</li>
+                        </ul>
+                        <p class="mt-3">
+                            <span class="tech-tag">Pandas</span>
+                            <span class="tech-tag">NumPy</span>
+                            <span class="tech-tag">Matplotlib</span>
+                            <span class="tech-tag">EDA</span>
+                            [cite_start][cite: 99]
+                        </p>
+                    `;
+                    break;
+
+                case 'education':
+                    modelResponse = `
+                        <h3>Education</h3>
+                        
+                        <h4>M.Sc. [cite_start]Mechatronics [cite: 22]</h4>
+                        <em>University of Siegen | Siegen, Germany | [cite_start]10/2022 - present [cite: 17, 18, 21]</em>
+                        <ul>
+                            [cite_start]<li><strong>Focus:</strong> Signal Processing, Machine Learning & AI applications [cite: 23]</li>
+                            <li><strong>Coursework:</strong> Recent Advances in Machine Learning; Control Systems; [cite_start]Sensorics [cite: 24]</li>
+                        </ul>
+
+                        [cite_start]<h4 class="mt-6">BE Automobile [cite: 26]</h4>
+                        <em>Gujarat Technical University | Ahmedabad, India | [cite_start]07/2017 - 05/2021 [cite: 19, 20, 25]</em>
+                        <ul>
+                            [cite_start]<li><strong>Focus:</strong> Mechanical design, programming fundamentals, CAD/CAM [cite: 27]</li>
+                            [cite_start]<li><strong>Coursework:</strong> Engineering Mathematics, Introduction to Programming [cite: 28]</li>
+                        </ul>
+                    `;
+                    break;
+
+                case 'skills':
+                    modelResponse = `
+                        <h3>Technical Skills</h3>
+
+                        [cite_start]<h4>Programming Languages [cite: 30]</h4>
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">SQL</span>
+                        <span class="tech-tag">C++</span>
+                        <span class="tech-tag">MATLAB</span>
+
+                        [cite_start]<h4 class="mt-4">LLM & NLP [cite: 31]</h4>
+                        <span class="tech-tag">LangChain</span>
+                        <span class="tech-tag">RAG</span>
+                        <span class="tech-tag">Hugging Face Transformers</span>
+                        <span class="tech-tag">Ollama</span>
+                        <span class="tech-tag">PEGASUS</span>
+                        <span class="tech-tag">Transformers</span>
+                        <span class="tech-tag">Tokenisation</span>
+                        <span class="tech-tag">Attention Mechanisms</span>
+                        <span class="tech-tag">Sentence Transformer</span>
+
+                        [cite_start]<h4 class="mt-4">ML/DL [cite: 32]</h4>
+                        <span class="tech-tag">PyTorch</span>
+                        <span class="tech-tag">TensorFlow</span>
+                        <span class="tech-tag">scikit-learn</span>
+                        <span class="tech-tag">XGBoost</span>
+                        <span class="tech-tag">CV-U-Net (segmentation)</span>
+                        <span class="tech-tag">denoising</span>
+                        <span class="tech-tag">OpenCV</span>
+
+                        [cite_start]<h4 class="mt-4">Data Engineering & Analysis [cite: 32]</h4>
+                        <span class="tech-tag">NumPy</span>
+                        <span class="tech-tag">Pandas</span>
+                        <span class="tech-tag">Seaborn</span>
+                        <span class="tech-tag">Matplotlib</span>
+                        <span class="tech-tag">Tableau</span>
+                        <span class="tech-tag">Exploratory Data Analysis</span>
+
+                        [cite_start]<h4 class="mt-4">Cloud & Databases [cite: 33]</h4>
+                        <span class="tech-tag">Docker</span>
+                        <span class="tech-tag">Chroma DB</span>
+                        <span class="tech-tag">MySQL (basic)</span>
+                        <span class="tech-tag">Qdrant DB</span>
+
+                        [cite_start]<h4 class="mt-4">Tools & Frameworks [cite: 34]</h4>
+                        <span class="tech-tag">Git</span>
+                        <span class="tech-tag">GitHub</span>
+                        <span class="tech-tag">Jupyter</span>
+                        <span class="tech-tag">Google Colab</span>
+                        <span class="tech-tag">Streamlit</span>
+                        <span class="tech-tag">FastAPI</span>
+
+                        <h3 class="mt-6">Other Skills</h3>
+                        
+                        [cite_start]<h4>Soft Skills [cite: 35]</h4>
+                        <p>Motivated team player, Structured problem-solving, Communication, Leadership.</p>
+
+                        [cite_start]<h4 class="mt-4">Languages [cite: 37, 38, 39]</h4>
+                        <p>English (C1), German (A2), Gujarati (C2)</p>
+                    `;
+                    break;
+                
+                case 'certificates':
+                    modelResponse = `
+                        <h3>Certificates</h3>
+                        <ul>
+                            [cite_start]<li>Python for Machine Learning with Numpy, Pandas & Matplotlib [cite: 104]</li>
+                            [cite_start]<li>Data Science Job Simulation [cite: 105]</li>
+                            [cite_start]<li>ChatGPT Prompt Engineering for Developers [cite: 106]</li>
+                            [cite_start]<li>How Transformer LLMs Work! [cite: 107]</li>
+                            [cite_start]<li>Attention in Transformers [cite: 108]</li>
+                            [cite_start]<li>Data Analysis with Python: Zero to Pandas [cite: 109]</li>
+                        </ul>
+                    `;
+                    break;
+                
+                case 'hobbies':
+                    modelResponse = `
+                        <h3>Hobbies</h3>
+                        [cite_start]<p>Shalin's hobbies include: [cite: 111]</p>
+                        <div class="mt-3">
+                            <span class="tech-tag">Photography</span>
+                            <span class="tech-tag">Travelling</span>
+                            <span class="tech-tag">Listening to Music</span>
+                            <span class="tech-tag">Watching Movies</span>
+                        </div>
+                    `;
+                    break;
+
+                case 'contact':
+                    modelResponse = `
+                        <h3>Contact Information</h3>
+                        <p>You can reach Shalin via the following channels:</p>
+                        <ul class="list-none ml-0">
+                            [cite_start]<li><strong>Email:</strong> <a href="mailto:shalin2010vachheta@gmail.com">shalin2010vachheta@gmail.com</a> [cite: 2]</li>
+                            [cite_start]<li><strong>Phone:</strong> +4915781506253 [cite: 3]</li>
+                            [cite_start]<li><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/shalin-vachheta/" target="_blank">linkedin.com/in/shalin-vachheta/</a> [cite: 2]</li>
+                            [cite_start]<li><strong>GitHub:</strong> <a href="https://github.com/ShalinVachheta017" target="_blank">github.com/ShalinVachheta017</a> [cite: 3]</li>
+                            [cite_start]<li><strong>Portfolio:</strong> <a href="https://Shalin_Vachheta_Portfolio.io" target="_blank">Shalin_Vachheta_Portfolio.io</a> [cite: 2]</li>
+                            [cite_start]<li><strong>Location:</strong> Siegen, NRW, Germany [cite: 4]</li>
+                        </ul>
+                    `;
+                    break;
+            }
+
+            // 3. Append the messages to the chat
+            appendMessage('user', userMessage);
+            appendMessage('model', modelResponse);
+        }
+
+        // Helper function to create and append message bubbles
+        function appendMessage(sender, htmlContent) {
+            const messageWrapper = document.createElement('div');
+            messageWrapper.className = `chat-bubble ${sender}`;
+
+            let avatarHtml = '';
+            if (sender === 'user') {
+                avatarHtml = `<div class="avatar user-avatar">S</div>`; // User initial
+                messageWrapper.innerHTML = `${avatarHtml}<div class="chat-content">${htmlContent}</div>`;
+            } else {
+                avatarHtml = `<div class="avatar model-avatar">✨</div>`; // Model icon
+                messageWrapper.innerHTML = `${avatarHtml}<div class="chat-content">${htmlContent}</div>`;
+            }
+            
+            chatContainer.appendChild(messageWrapper);
+            
+            // Scroll to the bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+
+</body>
+</html>
