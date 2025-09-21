@@ -75,12 +75,13 @@
         }
         
         #hero-canvas {
-            position: absolute;
+            position: fixed; /* Changed to fixed */
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: 0;
+            pointer-events: none; /* Ensures content is clickable */
         }
         
         .section-heading {
@@ -104,6 +105,8 @@
 
 <body class="nlp-gradient-bg">
 
+    <div id="hero-canvas"></div>
+
     <!-- Header & Navigation -->
     <header id="main-header" class="glass-effect fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-4xl z-50 rounded-full transition-all duration-300">
         <nav class="flex items-center justify-between p-2">
@@ -124,7 +127,6 @@
     <main>
         <!-- Section 1: Introduction -->
         <section id="introduction" class="section-min-height relative flex items-center justify-center p-4 overflow-hidden">
-            <div id="hero-canvas"></div>
             <div class="text-center relative z-10 reveal">
                 <img src="YOUR_IMAGE_URL.jpg" alt="Shalin Vachheta" class="w-40 h-40 rounded-full mx-auto mb-6 border-4 border-cyan-500/50 shadow-2xl object-cover"
                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9luPSJyb3VuZCI+PHBhdGggZD0iTTIwIDIxdi0yYTMgMyAwIDAgMC0zLTNIN2EzIDMgMCAwIDAtMyAzdjIiPjwvcGF0aD48Y2lyY2xlIGN4PSIxMiIgY3k9IjciIHI9IjQiPjwvY2lyY2xlPjwvc3ZnPg=='; this.classList.add('p-8'); this.classList.remove('object-cover');"
@@ -142,8 +144,8 @@
         </section>
 
         <!-- Section 2: Summary -->
-        <section id="summary" class="section-min-height flex items-center justify-center p-8">
-            <div class="max-w-4xl mx-auto reveal">
+        <section id="summary" class="section-min-height relative flex items-center justify-center p-8">
+            <div class="max-w-4xl mx-auto reveal z-10">
                 <h2 class="text-4xl font-bold text-center text-white mb-12 section-heading">About Me</h2>
                 <div class="glass-effect rounded-2xl p-8 md:p-12 space-y-6 text-lg text-gray-300 leading-relaxed">
                     <p>
@@ -160,8 +162,8 @@
         </section>
 
         <!-- Section 3: Experience -->
-        <section id="experience" class="section-min-height flex items-center justify-center p-8">
-            <div class="max-w-4xl mx-auto reveal w-full">
+        <section id="experience" class="section-min-height relative flex items-center justify-center p-8">
+            <div class="max-w-4xl mx-auto reveal w-full z-10">
                 <h2 class="text-4xl font-bold text-center text-white mb-16 section-heading">Experience</h2>
                 <div class="relative border-l-2 border-cyan-500/20 pl-10">
                     <div class="mb-12 relative">
@@ -180,8 +182,8 @@
         </section>
         
         <!-- Section 4: Projects -->
-        <section id="projects" class="py-24 p-8">
-            <div class="max-w-6xl mx-auto reveal">
+        <section id="projects" class="py-24 p-8 relative">
+            <div class="max-w-6xl mx-auto reveal z-10">
                 <h2 class="text-4xl font-bold text-center text-white mb-16 section-heading">Projects</h2>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <!-- Cards for all 9 projects -->
@@ -226,8 +228,8 @@
         </section>
 
         <!-- Section 5: Skills -->
-        <section id="skills" class="section-min-height flex items-center justify-center p-8">
-            <div class="max-w-4xl mx-auto reveal w-full">
+        <section id="skills" class="section-min-height relative flex items-center justify-center p-8">
+            <div class="max-w-4xl mx-auto reveal w-full z-10">
                 <h2 class="text-4xl font-bold text-center text-white mb-16 section-heading">Skills</h2>
                 <div class="space-y-10">
                     <div>
@@ -251,8 +253,8 @@
         </section>
 
         <!-- Section 6: Contact -->
-        <section id="contact" class="section-min-height flex flex-col items-center justify-center p-8 text-center">
-            <div class="max-w-2xl mx-auto reveal">
+        <section id="contact" class="section-min-height relative flex flex-col items-center justify-center p-8 text-center">
+            <div class="max-w-2xl mx-auto reveal z-10">
                 <h2 class="text-4xl font-bold text-center text-white mb-4 section-heading">Get In Touch</h2>
                 <p class="text-lg text-gray-400 mb-8">
                     I'm currently seeking new opportunities and am open to collaboration. Whether you have a question or just want to connect, my inbox is always open.
@@ -262,7 +264,7 @@
                 </a>
             </div>
             
-            <footer class="mt-24 text-center text-gray-500">
+            <footer class="mt-24 text-center text-gray-500 relative z-10">
                 <div class="flex justify-center space-x-6 mb-4">
                     <a href="https://github.com/ShalinVachheta017" target="_blank" class="hover:text-cyan-400 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.91 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg></a>
                     <a href="https://linkedin.com/in/shalin-vachheta/" target="_blank" class="hover:text-cyan-400 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path></svg></a>
