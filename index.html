@@ -152,6 +152,17 @@
             from { transform: translate(0, 0); }
             to { transform: translate(-50%, -50%); }
         }
+        
+        /* --- New Neural Network Animation Styles --- */
+        #skills-canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.3;
+        }
     </style>
 </head>
 
@@ -180,9 +191,7 @@
         <!-- Section 1: Introduction -->
         <section id="introduction" class="section-min-height relative flex items-center justify-center p-4 overflow-hidden">
             <div class="text-center relative z-10 reveal">
-                <img src="YOUR_IMAGE_URL.jpg" alt="Shalin Vachheta" class="w-40 h-40 rounded-full mx-auto mb-6 border-4 border-cyan-500/50 shadow-2xl object-cover"
-                    onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9luPSJyb3VuZCI+PHBhdGggZD0iTTIwIDIxdi0yYTMgMyAwIDAgMC0zLTNIN2EzIDMgMCAwIDAtMyAzdjIiPjwvcGF0aD48Y2lyY2xlIGN4PSIxMiIgY3k9IjciIHI9IjQiPjwvY2lyY2xlPjwvc3ZnPg=='; this.classList.add('p-8'); this.classList.remove('object-cover');"
-                >
+                <img src="shalin-bridge.jpg" alt="Shalin Vachheta" class="w-40 h-40 rounded-full mx-auto mb-6 border-4 border-cyan-500/50 shadow-2xl object-cover">
                 <h1 class="text-5xl md:text-7xl font-black text-white leading-tight">
                     Shalin Vachheta
                 </h1>
@@ -230,7 +239,7 @@
                     <div class="md:w-2/3">
                         <div id="exp-uni-siegen" class="exp-content active glass-effect animated-grid-bg rounded-xl p-8">
                            <div class="relative z-10">
-                                <p class="text-cyan-400 font-semibold text-sm mb-1">05/2024 - Present</p>
+                                <p class="text-cyan-400 font-semibold text-sm mb-1">05/2024 - 05/2025</p>
                                 <h3 class="text-2xl font-bold text-white mb-4">Sequence-to-Sequence Event Forecasting (BiLSTM)</h3>
                                 <ul class="list-disc list-inside text-gray-300 space-y-3">
                                     <li>Developing a bidirectional LSTM-based Seq2Seq model in PyTorch for event forecasting from CARLA Simulator data, improving accuracy by 25%.</li>
@@ -292,9 +301,10 @@
         </section>
 
         <!-- Section 5: Skills -->
-        <section id="skills" class="section-min-height relative flex items-center justify-center p-8">
+        <section id="skills" class="section-min-height relative flex items-center justify-center p-8 overflow-hidden">
+            <div id="skills-canvas-container"></div>
             <div class="max-w-4xl mx-auto reveal w-full z-10">
-                <h2 class="text-4xl font-bold text-center text-white mb-16 section-heading">Skills</h2>
+                <h2 class="text-4xl font-bold text-center text-white mb-16 section-heading">Core Competencies</h2>
                 <div class="space-y-10">
                     <div>
                         <h3 class="text-xl font-semibold text-cyan-300 mb-4">Programming & Core Languages</h3>
@@ -450,7 +460,137 @@
             mouseY = (event.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
         }
 
+        // --- New Skills Animation ---
+        let skillsScene, skillsCamera, skillsRenderer, skillsPoints, skillsLines;
+        const skillsMouse = new THREE.Vector2();
+
+        function initSkillsAnimation() {
+            const container = document.getElementById('skills-canvas-container');
+            if (!container) return;
+
+            skillsScene = new THREE.Scene();
+            skillsCamera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 1, 1000);
+            skillsCamera.position.z = 50;
+
+            skillsRenderer = new THREE.WebGLRenderer({ alpha: true, antias: true });
+            skillsRenderer.setSize(container.offsetWidth, container.offsetHeight);
+            skillsRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(skillsRenderer.domElement);
+            
+            const NUM_POINTS = 100;
+            const positions = [];
+            const particlesData = [];
+
+            for (let i = 0; i < NUM_POINTS; i++) {
+                const x = Math.random() * 200 - 100;
+                const y = Math.random() * 200 - 100;
+                const z = Math.random() * 200 - 100;
+                positions.push(x, y, z);
+                particlesData.push({
+                    velocity: new THREE.Vector3(-1 + Math.random() * 2, -1 + Math.random() * 2, -1 + Math.random() * 2).multiplyScalar(0.1),
+                    numConnections: 0
+                });
+            }
+            
+            const pGeom = new THREE.BufferGeometry();
+            pGeom.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+            pGeom.userData.particlesData = particlesData; // Attach custom data
+
+            const pMat = new THREE.PointsMaterial({ color: '#22d3ee', size: 1.5, blending: THREE.AdditiveBlending, transparent: true });
+            skillsPoints = new THREE.Points(pGeom, pMat);
+            skillsScene.add(skillsPoints);
+
+            const lineGeom = new THREE.BufferGeometry();
+            const linePos = new Float32Array(NUM_POINTS * NUM_POINTS * 3);
+            lineGeom.setAttribute('position', new THREE.BufferAttribute(linePos, 3).setUsage(THREE.DynamicDrawUsage));
+            const lineMat = new THREE.LineBasicMaterial({ color: '#0e7490', transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending });
+            skillsLines = new THREE.LineSegments(lineGeom, lineMat);
+            skillsScene.add(skillsLines);
+
+            container.addEventListener('mousemove', onSkillsMouseMove, false);
+            window.addEventListener('resize', onSkillsWindowResize, false);
+            animateSkills();
+        }
+
+        function onSkillsWindowResize() {
+            const container = document.getElementById('skills-canvas-container');
+            if (!container) return;
+            skillsCamera.aspect = container.offsetWidth / container.offsetHeight;
+            skillsCamera.updateProjectionMatrix();
+            skillsRenderer.setSize(container.offsetWidth, container.offsetHeight);
+        }
+
+        function onSkillsMouseMove(event) {
+            const container = document.getElementById('skills-canvas-container');
+            if (!container) return;
+            const rect = container.getBoundingClientRect();
+            skillsMouse.x = ((event.clientX - rect.left) / container.offsetWidth) * 2 - 1;
+            skillsMouse.y = -((event.clientY - rect.top) / container.offsetHeight) * 2 + 1;
+        }
+
+        function animateSkills() {
+            if (!skillsRenderer) return;
+
+            const pGeom = skillsPoints.geometry;
+            const positions = pGeom.attributes.position;
+            const particlesData = pGeom.userData.particlesData;
+            
+            // Mouse interaction
+            const mouseVector = new THREE.Vector3(skillsMouse.x, skillsMouse.y, 0.5);
+            mouseVector.unproject(skillsCamera);
+            const dir = mouseVector.sub(skillsCamera.position).normalize();
+            const distance = -skillsCamera.position.z / dir.z;
+            const pos = skillsCamera.position.clone().add(dir.multiplyScalar(distance));
+
+            let vertexpos = 0;
+            let numConnected = 0;
+
+            for (let i = 0; i < particlesData.length; i++) {
+                particlesData[i].numConnections = 0;
+                
+                const p = new THREE.Vector3(positions.getX(i), positions.getY(i), positions.getZ(i));
+                p.add(particlesData[i].velocity);
+
+                // Repel from mouse
+                const distToMouse = p.distanceTo(pos);
+                if (distToMouse < 20) {
+                    const repel = new THREE.Vector3().subVectors(p, pos).normalize();
+                    p.add(repel.multiplyScalar(0.5));
+                }
+
+                // Boundary check
+                if (p.x < -100 || p.x > 100) particlesData[i].velocity.x *= -1;
+                if (p.y < -100 || p.y > 100) particlesData[i].velocity.y *= -1;
+                if (p.z < -100 || p.z > 100) particlesData[i].velocity.z *= -1;
+
+                positions.setXYZ(i, p.x, p.y, p.z);
+            }
+
+            const linePositions = skillsLines.geometry.attributes.position;
+            for (let i = 0; i < particlesData.length; i++) {
+                for (let j = i + 1; j < particlesData.length; j++) {
+                    const p1 = new THREE.Vector3(positions.getX(i), positions.getY(i), positions.getZ(i));
+                    const p2 = new THREE.Vector3(positions.getX(j), positions.getY(j), positions.getZ(j));
+                    const dist = p1.distanceTo(p2);
+
+                    if (dist < 25 && numConnected < particlesData.length * 2) {
+                        linePositions.setXYZ(vertexpos++, p1.x, p1.y, p1.z);
+                        linePositions.setXYZ(vertexpos++, p2.x, p2.y, p2.z);
+                        numConnected++;
+                    }
+                }
+            }
+
+            positions.needsUpdate = true;
+            linePositions.needsUpdate = true;
+            skillsLines.geometry.setDrawRange(0, numConnected * 2);
+
+            skillsRenderer.render(skillsScene, skillsCamera);
+            requestAnimationFrame(animateSkills);
+        }
+
         init3D();
+        initSkillsAnimation();
     </script>
 </body>
 </html>
